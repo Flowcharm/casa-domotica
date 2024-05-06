@@ -261,7 +261,9 @@ void cardEditScreen() {
 
   while (currentState == Card_edit) {
     if (ts.isTouching()) {
-      Serial.println("Saliendo de la llamada...");
+      Serial.println("Cancelando accion...");
+      // 0: Exit to init screen
+      Serial.write(0);
       currentState = Initial;
       initialScreen();
     }
