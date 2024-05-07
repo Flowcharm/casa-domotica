@@ -1,26 +1,34 @@
-from board import send_cancel_action
+import rfid
+import time
+import cmd
 import serial
+from enum import Enum
 
-PORT = 'COM3'  # Modify before use
+PORT = 'COM7'  # Modify before use
 BAUD_RATE = 9600
 TIMEOUT = 0.1
+
+
+class SerialRead(Enum):
+    CANCEL_ACTION = 0
+
 
 screen = serial.Serial(port=PORT, baudrate=BAUD_RATE, timeout=TIMEOUT)
 
 
 def send_access_denied():
-    screen.write(0)
+    screen.write(b'\x00')
 
 
 def send_access_granted():
-    screen.write(1)
+    screen.write(b'\x01')
 
 
 def send_edit_cards():
-    screen.write(2)
+    screen.write(b'\x10')
 
 
-while True:
+def read():
     read = screen.readline()
-    if (read == 0):
-        send_cancel_action()
+    if (read == SerialRead.CANCEL_ACTION):
+        rfid.send_cancel_action()
