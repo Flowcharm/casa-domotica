@@ -248,7 +248,7 @@ void cardEditScreen() {
   tft.println("Acerca");
 
   tft.setFont(&FreeMonoBold12pt7b);
-  tft.setCursor(50, mid_screen_y +25);
+  tft.setCursor(50, mid_screen_y + 25);
   tft.setTextSize(1);
   tft.setTextColor(BLACK);
   tft.println("la tarjeta");
@@ -283,6 +283,7 @@ void checkAccessControl() {
     // 1: acceso concedido
     // 2: modificar tarjetas
     switch (incomingData) {
+      case 0:
       case ASCII_0:
         Serial.println("Acceso denegado");
 
@@ -293,6 +294,7 @@ void checkAccessControl() {
         currentState = Initial;
         initialScreen();
         break;
+      case 1:
       case ASCII_1:
         Serial.println("Acceso concedido");
 
@@ -303,6 +305,7 @@ void checkAccessControl() {
         currentState = Initial;
         initialScreen();
         break;
+      case 2:
       case ASCII_2:
         Serial.println("Modificando tarjetas");
 

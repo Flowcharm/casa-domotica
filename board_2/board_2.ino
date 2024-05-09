@@ -46,6 +46,11 @@ int incomingData = -1;
 
 Servo servo;
 
+enum digitalWrite {
+  Access_granted,
+  Access_denied
+};
+
 void setup() {
   Serial.begin(9600);  // Start serial communication for debugging
   SPI.begin();         // Initialize SPI bus
@@ -59,6 +64,9 @@ void setup() {
   pinMode(LED_RED_PIN, OUTPUT);
   pinMode(LED_BLUE_PIN, OUTPUT);
   pinMode(BUZZER_PIN, OUTPUT);
+
+  // Default access granted card
+  registeredCards.push_back("F3BF3011");
 
   closeDoor();
 }
@@ -93,12 +101,16 @@ void rfidModule() {
         if (isCardRegistered(uidStr)) {
           acceptedCardLed();
           Serial.println("Card is valid and has permissions");
+
           openDoor();
           delay(OPEN_DOOR_TIME);
           closeDoor();
+
+          Serial.write(Access_granted);
         } else {
           Serial.println("Card does not have permissions");
           deniedCardLed();
+          Serial.write(Access_denied);
         }
         break;
       case Add_card:

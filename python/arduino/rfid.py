@@ -1,12 +1,5 @@
 import serial
-import screen
-from enum import Enum
-
-
-# class SerialRead(Enum):
-#     ACCESS_GRANTED = 0,
-#     ACCESS_DENIED = b'\x01'
-
+from arduino import screen
 
 PORT = 'COM6'  # Modify before use
 BAUD_RATE = 9600
@@ -16,18 +9,21 @@ board = serial.Serial(port=PORT, baudrate=BAUD_RATE, timeout=TIMEOUT)
 
 
 def send_add_new_card():
+    print("RFID: New card")
     board.write(b'\x00')
 
 
 def send_remove_card():
+    print("RFID: Remove card")
     board.write(b'\x01')
 
 
 def send_cancel_action():
+    print("RFID: Cancel RFID action")
     board.write(b'\x10')
 
 
-def read():
+def readRFID():
     read = board.readline()
     if (read == b'\x00'):
         print("Access granted!")
