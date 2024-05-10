@@ -30,9 +30,9 @@ def readRFID():
     if (read == b'\x00'):
         print("Access granted!")
         screen.send_access_granted()
-    elif (read ==  b'\x01'):
+    elif (read == b'\x01'):
         print("Access denied!")
         screen.send_access_denied()
-    elif (read ==  b'\x02'):
+    elif (read == b'\x02'):
         print("Card edited!")
         screen.send_initial_screen()

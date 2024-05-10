@@ -1,7 +1,7 @@
 import threading
 import time
 from flask import Flask, render_template
-from arduino import rfid, screen, main
+from arduino import rfid, door, main
 
 app = Flask(__name__)
 
@@ -21,6 +21,18 @@ def add_card():
 def remove_card():
     rfid.send_remove_card()
     return "card removed"
+
+
+@app.route("/grant-access")
+def grant_access():
+    door.send_access_granted()
+    return "Access granted"
+
+
+@app.route("/deny-access")
+def deny_access():
+    door.send_access_denied()
+    return "Access denied"
 
 
 def web():

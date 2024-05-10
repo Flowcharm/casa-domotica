@@ -21,6 +21,7 @@
 #define ASCII_0 48
 #define ASCII_1 49
 #define ASCII_2 50
+#define ASCII_3 51
 
 #define MAX_REGISTERED_CARDS 10
 
@@ -49,7 +50,8 @@ Servo servo;
 enum digitalWrite {
   Access_granted,
   Access_denied,
-  Card_edited
+  Card_edited,
+  Open_door
 };
 
 void setup() {
@@ -103,9 +105,7 @@ void rfidModule() {
           acceptedCardLed();
           Serial.println("Card is valid and has permissions");
 
-          openDoor();
-          delay(OPEN_DOOR_TIME);
-          closeDoor();
+          openAndCloseDoor();
 
           Serial.write(Access_granted);
         } else {
@@ -133,6 +133,12 @@ void rfidModule() {
 
     mfrc522.PICC_HaltA();  // Halt PICC
   }
+}
+
+void openAndCloseDoor() {
+  openDoor();
+  delay(OPEN_DOOR_TIME);
+  closeDoor();
 }
 
 void closeDoor() {
@@ -197,18 +203,27 @@ void checkCardActions() {
     // 0: Add new card
     // 1: Remove card
     // 2: Cancel action
+    // 3: Open door
     switch (incomingData) {
+      case 0:
       case ASCII_0:
         Serial.println("Add card");
         currentState = Add_card;
         break;
+      case 1:
       case ASCII_1:
         Serial.println("Remove card");
         currentState = Remove_card;
         break;
+      case 2:
       case ASCII_2:
         Serial.println("Cancel action");
         currentState = Reading;
+        break;
+      case 3:
+      case ASCII_3:
+        Serial.println("Door opened");
+        openAndCloseDoor();
         break;
     }
   }
