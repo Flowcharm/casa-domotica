@@ -1,7 +1,7 @@
 import threading
 import time
 from flask import Flask, render_template
-# from arduino import rfid, main
+from arduino import rfid, screen, main
 
 app = Flask(__name__)
 
@@ -13,13 +13,13 @@ def index():
 
 @app.route("/add-card")
 def add_card():
-    # rfid.send_add_new_card()
+    rfid.send_add_new_card()
     return "new card"
 
 
 @app.route("/remove-card")
 def remove_card():
-    # rfid.send_remove_card()
+    rfid.send_remove_card()
     return "card removed"
 
 
@@ -30,6 +30,6 @@ def web():
 
 if __name__ == "__main__":
     threading.Thread(target=web, daemon=True).start()
-    # threading.Thread(target=main.initArduino, daemon=True).start()
+    threading.Thread(target=main.initArduino, daemon=True).start()
     while True:
         time.sleep(1)

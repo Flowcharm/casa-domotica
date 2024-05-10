@@ -12,6 +12,7 @@
 #define ASCII_0 48
 #define ASCII_1 49
 #define ASCII_2 50
+#define ASCII_3 51
 
 #define LCD_RESET A4
 
@@ -53,7 +54,6 @@ void setup() {
 
   uint16_t identifier = tft.readID();
   tft.begin(identifier);
-
   initialScreen();
 }
 
@@ -260,6 +260,7 @@ void cardEditScreen() {
   tft.println("Pulsar para cancelar");
 
   while (currentState == Card_edit) {
+    checkAccessControl();
     if (ts.isTouching()) {
       Serial.println("Cancelando accion...");
       // 0: Exit to init screen
@@ -282,6 +283,7 @@ void checkAccessControl() {
     // 0: acceso denegado
     // 1: acceso concedido
     // 2: modificar tarjetas
+    // 3: initial screen
     switch (incomingData) {
       case 0:
       case ASCII_0:
@@ -312,6 +314,15 @@ void checkAccessControl() {
         cardEditScreen();
 
         delay(screen_delay);
+        break;
+      case 3:
+      case ASCII_3:
+        Serial.println("Pantalla principal");
+
+        initialScreen();
+
+        currentState = Initial;
+        break;
     }
   }
 }

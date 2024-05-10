@@ -10,17 +10,19 @@ board = serial.Serial(port=PORT, baudrate=BAUD_RATE, timeout=TIMEOUT)
 
 def send_add_new_card():
     print("RFID: New card")
-    board.write(b'\x00')
+    board.write(b'0')
+    screen.send_edit_cards()
 
 
 def send_remove_card():
     print("RFID: Remove card")
-    board.write(b'\x01')
+    board.write(b'1')
+    screen.send_edit_cards()
 
 
 def send_cancel_action():
     print("RFID: Cancel RFID action")
-    board.write(b'\x10')
+    board.write(b'2')
 
 
 def readRFID():
@@ -28,6 +30,9 @@ def readRFID():
     if (read == b'\x00'):
         print("Access granted!")
         screen.send_access_granted()
-    if (read ==  b'\x01'):
+    elif (read ==  b'\x01'):
         print("Access denied!")
         screen.send_access_denied()
+    elif (read ==  b'\x02'):
+        print("Card edited!")
+        screen.send_initial_screen()

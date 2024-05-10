@@ -48,7 +48,8 @@ Servo servo;
 
 enum digitalWrite {
   Access_granted,
-  Access_denied
+  Access_denied,
+  Card_edited
 };
 
 void setup() {
@@ -118,12 +119,14 @@ void rfidModule() {
         Serial.println("New card added");
         registeredCards.push_back(uidStr);
         currentState = Reading;
+        Serial.write(Card_edited);
         break;
       case Remove_card:
         actionCardLed();
         Serial.println("Card deleted");
         removeCard(uidStr);
         currentState = Reading;
+        Serial.write(Card_edited);
         break;
     }
 
