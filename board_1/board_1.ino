@@ -132,6 +132,7 @@ void callingScreen() {
       configureTouchScreenPins();
       delay(250);
     }
+    checkAccessControl();
   }
 }
 
