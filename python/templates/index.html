@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8" />
@@ -88,11 +88,11 @@
     const btnRemoveCard = document.querySelector("#btn-remove-card");
 
     btnAddCard.addEventListener("click", async () => {
-      await fetch("http://127.0.0.1:5000/add-card");
+      await fetch("http://{{url}}/add-card");
     });
 
     btnRemoveCard.addEventListener("click", async () => {
-      await fetch("http://127.0.0.1:5000/remove-card");
+      await fetch("http://{{url}}/remove-card");
     });
   </script>
 </body>

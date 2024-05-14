@@ -36,8 +36,8 @@ def deny_access():
 
 
 def web():
-    # app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
-    app.run()
+    app.run(debug=False, use_reloader=False, host='0.0.0.0', port=5000)
+    # app.run()
 
 
 if __name__ == "__main__":
