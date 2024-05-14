@@ -1,27 +1,10 @@
-import os
 import threading
 import time
-from twilio.rest import Client
+from config import url, isCallAvailable, camUrl, grantUrl, denyUrl
 from flask import Flask, render_template
 from arduino import rfid, door, main
-from dotenv import load_dotenv
-
-load_dotenv()
-
-phone_number_to = os.getenv("PHONE_NUMBER_TO")
-phone_number_from = os.getenv("PHONE_NUMBER_FROM")
-account_sid = os.getenv("TWILIO_ACCOUNT_SID")
-auth_token = os.getenv("TWILIO_AUTH_TOKEN")
-
-client = Client(account_sid, auth_token)
 
 app = Flask(__name__)
-
-url = ""
-camUrl = ""
-isCallAvailable = False
-grantUrl = f"{camUrl}/grant-access"
-denyUrl = f"{camUrl}/deny-access"
 
 
 @app.route("/")
@@ -61,14 +44,6 @@ def deny_access():
 def web():
     app.run(debug=False, use_reloader=False, host='0.0.0.0', port=5000)
     # app.run()
-
-
-def sendMessage():
-    client.messages.create(
-        from_=phone_number_from,
-        body=f"¡Hola! te están llamando al telefonillo puedes responder la llamada desde este enlace {url}/cam",
-        to=phone_number_to
-    )
 
 
 if __name__ == "__main__":
