@@ -1,14 +1,43 @@
+import os
 import threading
 import time
+from twilio.rest import Client
 from flask import Flask, render_template
 from arduino import rfid, door, main
+from dotenv import load_dotenv
+
+load_dotenv()
+
+phone_number_to = os.getenv("PHONE_NUMBER_TO")
+phone_number_from = os.getenv("PHONE_NUMBER_FROM")
+account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+
+client = Client(account_sid, auth_token)
 
 app = Flask(__name__)
+
+url = ""
+camUrl = ""
+isCallAvailable = False
+grantUrl = f"{camUrl}/grant-access"
+denyUrl = f"{camUrl}/deny-access"
+
+message = client.messages.create(
+    from_=phone_number_from,
+    body=f"¡Hola! te están llamando al telefonillo puedes responder la llamada desde este enlace {url}/cam",
+    to=phone_number_to
+)
 
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", url)
+
+
+@app.route("/cam")
+def index():
+    return render_template("cam.html", isCallAvailable, camUrl, grantUrl, denyUrl)
 
 
 @app.route("/add-card")
