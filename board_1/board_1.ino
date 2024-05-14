@@ -41,10 +41,9 @@ enum state {
 enum serialWrite {
   Cancel_action,
   Calling_action
-}
+};
 
 state currentState = Initial;
-bool isStateScreenOn = true;
 Adafruit_TFTLCD tft;
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
