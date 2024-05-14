@@ -13,6 +13,7 @@
 #define ASCII_1 49
 #define ASCII_2 50
 #define ASCII_3 51
+#define ASCII_4 52
 
 #define LCD_RESET A4
 
@@ -36,6 +37,11 @@ enum state {
   Call_in_progress,
   Card_edit
 };
+
+enum serialWrite {
+  Cancel_action,
+  Calling_action
+}
 
 state currentState = Initial;
 bool isStateScreenOn = true;
@@ -68,6 +74,7 @@ void loop() {
 }
 
 void initialScreen() {
+  currentState = Initial;
   configureTouchScreenPins();
   int16_t mid_screen_y = SCREEN_HEIGHT / 2;
   tft.fillScreen(WHITE);
@@ -92,6 +99,7 @@ void callingScreen() {
   int ANIMATION_FRAMES = 4;
   int loopCount = 0;
   tft.fillScreen(WHITE);
+  Serial.write(Calling_action);
   Serial.println("Llamando...");
 
   tft.setFont(&FreeMonoBold12pt7b);
@@ -126,7 +134,6 @@ void callingScreen() {
 
     if (ts.isTouching()) {
       Serial.println("Saliendo de la peticion de llamada...");
-      currentState = Initial;
       initialScreen();
     } else {
       configureTouchScreenPins();
@@ -225,7 +232,6 @@ void callInProgressScreen() {
 
     if (ts.isTouching()) {
       Serial.println("Saliendo de la llamada...");
-      currentState = Initial;
       initialScreen();
     } else {
       configureTouchScreenPins();
@@ -264,9 +270,7 @@ void cardEditScreen() {
     checkAccessControl();
     if (ts.isTouching()) {
       Serial.println("Cancelando accion...");
-      // 0: Exit to init screen
-      Serial.write(0);
-      currentState = Initial;
+      Serial.write(Cancel_action);
       initialScreen();
     }
   }
@@ -284,7 +288,8 @@ void checkAccessControl() {
     // 0: acceso denegado
     // 1: acceso concedido
     // 2: modificar tarjetas
-    // 3: initial screen
+    // 3: pantalla inicial
+    // 4: llamada en curso
     switch (incomingData) {
       case 0:
       case ASCII_0:
@@ -294,7 +299,6 @@ void checkAccessControl() {
 
         delay(screen_delay);
 
-        currentState = Initial;
         initialScreen();
         break;
       case 1:
@@ -305,7 +309,6 @@ void checkAccessControl() {
 
         delay(screen_delay);
 
-        currentState = Initial;
         initialScreen();
         break;
       case 2:
@@ -321,8 +324,12 @@ void checkAccessControl() {
         Serial.println("Pantalla principal");
 
         initialScreen();
+        break;
+      case 4:
+      case ASCII_4:
+        Serial.println("Llamada en curso");
 
-        currentState = Initial;
+        callInProgressScreen();
         break;
     }
   }

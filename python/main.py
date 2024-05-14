@@ -23,12 +23,6 @@ isCallAvailable = False
 grantUrl = f"{camUrl}/grant-access"
 denyUrl = f"{camUrl}/deny-access"
 
-message = client.messages.create(
-    from_=phone_number_from,
-    body=f"¡Hola! te están llamando al telefonillo puedes responder la llamada desde este enlace {url}/cam",
-    to=phone_number_to
-)
-
 
 @app.route("/")
 def index():
@@ -67,6 +61,14 @@ def deny_access():
 def web():
     app.run(debug=False, use_reloader=False, host='0.0.0.0', port=5000)
     # app.run()
+
+
+def sendMessage():
+    client.messages.create(
+        from_=phone_number_from,
+        body=f"¡Hola! te están llamando al telefonillo puedes responder la llamada desde este enlace {url}/cam",
+        to=phone_number_to
+    )
 
 
 if __name__ == "__main__":
