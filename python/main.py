@@ -13,7 +13,7 @@ def index():
 
 
 @app.route("/cam")
-def index():
+def cam():
     return render_template("cam.html", isCallAvailable, camUrl, grantUrl, denyUrl)
 
 
