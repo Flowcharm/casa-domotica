@@ -1,4 +1,4 @@
-from config import client, phone_number_from, phone_number_to, url
+from config import client, phone_number_from, phone_number_to, url, isCallAvailable
 from . import rfid
 from serial import Serial
 
@@ -41,5 +41,5 @@ def readScreen():
     if (read == b'\x00'):
         rfid.send_cancel_action()
     elif (read == b'\x01'):
+        isCallAvailable = True
         sendMessage()
-        send_call_in_progress()

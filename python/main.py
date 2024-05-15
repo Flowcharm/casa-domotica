@@ -2,7 +2,7 @@ import threading
 import time
 from config import url, isCallAvailable, camUrl, grantUrl, denyUrl
 from flask import Flask, render_template
-from arduino import rfid, door, main
+from arduino import rfid, door, main, screen
 
 app = Flask(__name__)
 
@@ -14,6 +14,7 @@ def index():
 
 @app.route("/cam")
 def cam():
+    screen.send_call_in_progress()
     return render_template("cam.html", isCallAvailable, camUrl, grantUrl, denyUrl)
 
 
