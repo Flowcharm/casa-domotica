@@ -101,7 +101,6 @@ void callingScreen() {
   int loopCount = 0;
   tft.fillScreen(WHITE);
   Serial.write(Calling_action);
-  Serial.println("Llamando...");
 
   tft.setFont(&FreeMonoBold12pt7b);
   tft.setCursor(45, mid_screen_y);

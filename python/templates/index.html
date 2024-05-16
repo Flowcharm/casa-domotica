@@ -1,100 +1,118 @@
 <!DOCTYPE html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ping</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ping</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-    }
+      html {
+        font-family: sans-serif, Arial, Helvetica;
+        width: 100vw;
+        height: 100vh;
+      }
 
-    html {
-      font-family: sans-serif, Arial, Helvetica;
-      width: 100vw;
-      height: 100vh;
-    }
+      body {
+        height: 100%;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-    body {
-      height: 100%;
-      width: 100vw;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+      ul {
+        list-style: none;
+        gap: 50px;
+        display: flex;
+      }
 
-    ul {
-      list-style: none;
-      gap: 50px;
-      display: flex;
-    }
+      li button {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: transparent;
+        outline: none;
+        border: 1px solid black;
+        align-items: center;
+        cursor: pointer;
+        transition: transform 0.1s ease;
+      }
 
-    li button {
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-      padding: 20px;
-      border-radius: 10px;
-      background-color: transparent;
-      outline: none;
-      border: 1px solid black;
-      align-items: center;
-      cursor: pointer;
-      transition: transform .1s ease;
-    }
+      li button:hover {
+        transform: scale(1.1);
+      }
 
-    li button:hover{
-      transform: scale(1.1);
-    }
+      li button:active {
+        transform: scale(0.9);
+      }
+    </style>
+  </head>
 
-    li button:active{
-      transform: scale(0.9);
-    }
-  </style>
-</head>
+  <body>
+    <ul>
+      <li>
+        <button id="btn-add-card">
+          <h2>Añadir tarjeta</h2>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="icon icon-tabler icons-tabler-outline icon-tabler-plus"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M12 5l0 14" />
+            <path d="M5 12l14 0" />
+          </svg>
+        </button>
+      </li>
+      <li>
+        <button id="btn-remove-card">
+          <h2>Eliminar tarjeta</h2>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="icon icon-tabler icons-tabler-outline icon-tabler-minus"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M5 12l14 0" />
+          </svg>
+        </button>
+      </li>
+    </ul>
 
-<body>
-  <ul>
-    <li>
-      <button id="btn-add-card">
-        <h2>Añadir tarjeta</h2>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M12 5l0 14" />
-          <path d="M5 12l14 0" />
-        </svg>
-      </button>
-    </li>
-    <li>
-      <button id="btn-remove-card">
-        <h2>Eliminar tarjeta</h2>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="icon icon-tabler icons-tabler-outline icon-tabler-minus">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M5 12l14 0" />
-        </svg>
-      </button>
-    </li>
-  </ul>
+    <script>
+      const btnAddCard = document.querySelector("#btn-add-card");
+      const btnRemoveCard = document.querySelector("#btn-remove-card");
 
-  <script>
-    const btnAddCard = document.querySelector("#btn-add-card");
-    const btnRemoveCard = document.querySelector("#btn-remove-card");
+      btnAddCard.addEventListener("click", async () => {
+        await fetch("http://{{url}}/add-card");
+        window.reload();
+      });
 
-    btnAddCard.addEventListener("click", async () => {
-      await fetch("http://{{url}}/add-card");
-    });
-
-    btnRemoveCard.addEventListener("click", async () => {
-      await fetch("http://{{url}}/remove-card");
-    });
-  </script>
-</body>
-
+      btnRemoveCard.addEventListener("click", async () => {
+        await fetch("http://{{url}}/remove-card");
+        window.reload();
+      });
+    </script>
+  </body>
 </html>
