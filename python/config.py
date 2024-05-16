@@ -11,7 +11,6 @@ auth_token = os.getenv("TWILIO_AUTH_TOKEN")
 
 url = ""
 camUrl = ""
-isCallAvailable = False
 grantUrl = f"{url}/grant-access"
 denyUrl = f"{url}/deny-access"
 
