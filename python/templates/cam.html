@@ -37,6 +37,7 @@
         height: 300px;
         width: 500px;
         border-radius: 15px;
+        object-fit: cover;
       }
 
       button {
@@ -59,12 +60,29 @@
         background-color: black;
         transform: scale(0.9);
       }
+    
+      .charging {
+        background-color: gray;
+        animation: charging 2s infinite;
+      }
+
+      @keyframes charging {
+        0% {
+          opacity: 0.2;
+        }
+        50% {
+          opacity: 0.8;
+        }
+        100% {
+          opacity: 0.2;
+        }
+      }
     </style>
   </head>
 
   <body>
     {% if isCallAvailable %}
-    <img src="{{camUrl}}" />
+    <img id="image" class="charging" />
     <div class="actions">
       <button id="btn-grant">Aceptar</button>
       <button id="btn-deny">Rechazar</button>
@@ -74,9 +92,14 @@
     {% endif %}
   </body>
 
-  <script>
+  {% if isCallAvailable %}
+  <script defer>
+    const wsURL = 'ws://' + '{{camUrl}}' + ':' + '{{camPort}}' + '/';
     const btnGrant = document.querySelector("#btn-grant");
     const btnDeny = document.querySelector("#btn-deny");
+    const image = document.getElementById('image');
+
+    let isCharging = true;
 
     btnGrant.addEventListener("click", async () => {
       await fetch("{{grantUrl}}");
@@ -87,5 +110,50 @@
       await fetch("{{denyUrl}}");
       window.location.reload();
     });
+
+    const ws = new WebSocket(wsURL);
+
+    function setIsCharging(value) {
+      if (value) {
+        image.classList.add('charging');
+        isCharging = true;
+      } else {
+        image.classList.remove('charging');
+        isCharging = false;
+      }
+    }
+
+    ws.onmessage = (event) => {
+      if (typeof event.data === 'string') {
+        console.log(event)
+        if (event.data.substring(0, 9) === '[STREAM]') {
+          const incomingValue = event.data.substring(9);
+          if (incomingValue === '[PAUSE]') {
+            setIsCharging(true);
+          } else if (incomingValue === '[START]') {
+            setIsCharging(false);
+          }
+        } 
+      } else {
+        if (isCharging) {
+          image.classList.remove('charging');
+          isCharging = false;
+        }
+        const blob = new Blob([event.data], { type: 'image/jpeg' });
+        const url = URL.createObjectURL(blob);
+        image.src = url;
+      }
+    };
+
+    ws.onopen = () => {
+      console.log('Connected');
+    };
+    ws.onclose = () => {
+      console.log('Disconnected');
+    };
+    ws.onerror = (error) => {
+      console.error('Error: ' + error);
+    };
   </script>
+  {% endif %}
 </html>
