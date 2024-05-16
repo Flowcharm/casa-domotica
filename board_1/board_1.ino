@@ -9,6 +9,8 @@
 #define YM 7
 #define XP 6
 
+#define SCREEN_DELAY 250 // ms
+
 #define ASCII_0 48
 #define ASCII_1 49
 #define ASCII_2 50
@@ -112,7 +114,7 @@ void callingScreen() {
   tft.setTextSize(1);
   tft.setTextColor(BLACK);
   tft.println("Pulsar para cancelar");
-  delay(250);
+  delay(SCREEN_DELAY);
   while (currentState == Calling) {
     tft.setFont(&FreeMonoBold12pt7b);
     tft.setCursor(45, mid_screen_y);
@@ -136,7 +138,7 @@ void callingScreen() {
       initialScreen();
     } else {
       configureTouchScreenPins();
-      delay(250);
+      delay(SCREEN_DELAY);
     }
     checkAccessControl();
   }
@@ -210,7 +212,7 @@ void callInProgressScreen() {
   tft.setTextSize(1);
   tft.setTextColor(BLACK);
   tft.println("Pulsar para colgar");
-  delay(250);
+  delay(SCREEN_DELAY);
   while (currentState == Call_in_progress) {
     tft.setFont(&FreeMonoBold12pt7b);
     tft.setCursor(45, mid_screen_y);
@@ -234,8 +236,10 @@ void callInProgressScreen() {
       initialScreen();
     } else {
       configureTouchScreenPins();
-      delay(250);
+      delay(SCREEN_DELAY);
     }
+
+    checkAccessControl();
   }
 }
 

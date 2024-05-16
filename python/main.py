@@ -2,7 +2,7 @@ import threading
 import time
 from config import url, isCallAvailable, camUrl, grantUrl, denyUrl
 from flask import Flask, render_template
-from arduino import rfid, door, main
+from arduino import rfid, door, main, screen
 
 app = Flask(__name__)
 
