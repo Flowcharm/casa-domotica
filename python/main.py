@@ -9,12 +9,12 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.html", url)
+    return render_template("index.html", url=url)
 
 
 @app.route("/cam")
 def cam():
-    return render_template("cam.html", isCallAvailable, camUrl, grantUrl, denyUrl)
+    return render_template("cam.html", isCallAvailable=isCallAvailable, camUrl=camUrl, grantUrl=grantUrl, denyUrl=denyUrl)
 
 
 @app.route("/add-card")
