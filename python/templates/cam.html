@@ -80,10 +80,12 @@
 
     btnGrant.addEventListener("click", async () => {
       await fetch("{{grantUrl}}");
+      window.location.reload();
     });
 
     btnDeny.addEventListener("click", async () => {
       await fetch("{{denyUrl}}");
+      window.location.reload();
     });
   </script>
 </html>

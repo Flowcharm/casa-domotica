@@ -106,12 +106,10 @@
 
       btnAddCard.addEventListener("click", async () => {
         await fetch("http://{{url}}/add-card");
-        window.reload();
       });
 
       btnRemoveCard.addEventListener("click", async () => {
         await fetch("http://{{url}}/remove-card");
-        window.reload();
       });
     </script>
   </body>
