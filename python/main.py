@@ -53,6 +53,11 @@ def deny_access():
     door.send_access_denied()
     return "Access denied"
 
+@app.route("/door-webhook")
+def door_webhook():
+    global isCallAvailable
+    isCallAvailable = True
+    return "Webhook"
 
 def web():
     app.run(debug=False, host='0.0.0.0', port=5000)
