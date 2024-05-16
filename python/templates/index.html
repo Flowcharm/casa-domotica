@@ -105,11 +105,11 @@
       const btnRemoveCard = document.querySelector("#btn-remove-card");
 
       btnAddCard.addEventListener("click", async () => {
-        await fetch("http://{{url}}/add-card");
+        await fetch("{{url}}/add-card");
       });
 
       btnRemoveCard.addEventListener("click", async () => {
-        await fetch("http://{{url}}/remove-card");
+        await fetch("{{url}}/remove-card");
       });
     </script>
   </body>
