@@ -93,8 +93,8 @@
   </body>
 
   {% if isCallAvailable %}
-  <script defer>
-    const wsURL = 'ws://' + '{{camUrl}}' + ':' + '{{camPort}}' + '/';
+  <script>
+    const wsURL = 'ws://' + '{{camHost}}' + ':' + '{{camPort}}' + '/';
     const btnGrant = document.querySelector("#btn-grant");
     const btnDeny = document.querySelector("#btn-deny");
     const image = document.getElementById('image');
