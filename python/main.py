@@ -1,8 +1,9 @@
 import threading
 import time
-from config import url, camUrl, grantUrl, denyUrl
+from config import url, camHost, camPort, grantUrl, denyUrl
 from flask import Flask, render_template
 from arduino import rfid, door, main, screen
+from esp32.StreamServer import StreamServer
 
 app = Flask(__name__)
 
@@ -19,7 +20,7 @@ def cam():
     global isCallAvailable
     if isCallAvailable:
         screen.send_call_in_progress()
-    return render_template("cam.html", isCallAvailable=isCallAvailable, camUrl=camUrl, grantUrl=grantUrl, denyUrl=denyUrl)
+    return render_template("cam.html", isCallAvailable=isCallAvailable, camHost=camHost, camPort=camPort, grantUrl=grantUrl, denyUrl=denyUrl)
 
 
 @app.route("/add-card")
@@ -64,12 +65,19 @@ def web():
     # app.run()
 
 
+def socket():
+    streamServer = StreamServer(host=camHost, port=camPort)
+    streamServer.run()
+
 if __name__ == "__main__":
     web = threading.Thread(target=web)
     arduino = threading.Thread(target=main.initArduino)
+    stream = threading.Thread(target=socket)
 
     web.start()
     arduino.start()
+    stream.start()
 
     web.join()
     arduino.join()
+    stream.join()

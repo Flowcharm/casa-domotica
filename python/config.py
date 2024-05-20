@@ -10,7 +10,8 @@ account_sid = os.getenv("TWILIO_ACCOUNT_SID")
 auth_token = os.getenv("TWILIO_AUTH_TOKEN")
 
 url = ""
-camUrl = ""
+camHost = ""
+camPort = "8000"
 grantUrl = f"{url}/grant-access"
 denyUrl = f"{url}/deny-access"
 
