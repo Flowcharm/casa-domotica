@@ -8,8 +8,6 @@
 
 #include "config.h"
 
-char* incomingData = NULL; 
-
 using namespace websockets;
 WebsocketsClient client;
 
@@ -36,8 +34,8 @@ void setup() {
 
   initCamera();
 
-#if defined(pinLed)
-  // TODO
+#if defined(PIN_LED)
+  initLedFlash();
 #endif
 
 #if defined (DEFAULT_SSID) && defined(DEFAULT_PASSWORD)
@@ -68,32 +66,127 @@ void loop() {
   delay(1);
 }
 
+void setLed(bool ledValue) {
+  Serial.print("Recibi el valor en el led: ");
+  Serial.println(ledValue);
+  if (ledValue) {
+    Serial.println("Encendiendo");
+    digitalWrite(PIN_LED, HIGH);
+  } else {
+    Serial.println("Apagando");
+    digitalWrite(PIN_LED, LOW);
+  }
+}
+
+esp_err_t sendCurrentConfig() {
+  sensor_t *sensor = esp_camera_sensor_get();
+  String config = "";
+  config += "FRAMESIZE:";
+  config += sensor->status.framesize;
+
+  config += ",LED:";
+  config += digitalRead(PIN_LED); // 0 (LOW) o 1 (HIGH)
+
+  config += ",HMIRROR:";
+  config += sensor->status.hmirror;
+
+  config += ",VFLIP:";
+  config += sensor->status.vflip;
+
+  bool sent = client.send("[CONFIG]" + config);
+  if (!sent) {
+    Serial.println("Error al enviar la configuración");
+    return ESP_FAIL;
+  }
+  Serial.println("Configuración enviada correctamente");
+  return ESP_OK;
+}
+
+void setResolution(framesize_t resolution) {
+  sensor_t *sensor = esp_camera_sensor_get();
+
+  sensor->set_framesize(sensor, resolution);
+
+  Serial.print("Resolución cambiada a: ");
+  Serial.println(sensor->status.framesize);
+}
+
+void setVFlip(bool vflip) {
+  sensor_t *sensor = esp_camera_sensor_get();
+
+  sensor->set_vflip(sensor, vflip);
+
+  Serial.print("VFlip cambiado a: ");
+  Serial.println(vflip);
+}
+
+void setHMirror(bool hmirror) {
+  sensor_t *sensor = esp_camera_sensor_get();
+
+  sensor->set_hmirror(sensor, hmirror);
+
+  Serial.print("HMirror cambiado a: ");
+  Serial.println(hmirror);
+}
+
+void handleCommand(String command) {
+  if (command.startsWith("FRAMESIZE:")) {
+    framesize_t frameSize = (framesize_t)command.substring(10).toInt();
+    setResolution(frameSize);
+  } else if (command.startsWith("LED:")) {
+    bool ledValue = command.substring(4).toInt();
+    setLed(ledValue);
+  } else if (command.startsWith("HMIRROR:")) {
+    bool hmirror = command.substring(8).toInt();
+    setHMirror(hmirror);
+  } else if (command.startsWith("VFLIP:")) {
+    bool vflip = command.substring(6).toInt();
+    setVFlip(vflip); 
+  } else {
+    Serial.print("Comando no reconocido: ");
+    Serial.println(command);
+  }
+}
+
 void onMessageSocket(WebsocketsMessage message) {
   Serial.print("Mensaje: ");
   Serial.println(message.data());
 
   if(message.data().startsWith("[STREAM]")){
-    incomingData = (char*)message.data().c_str();
-    incomingData += 8;
-    Serial.print("Comando de stream recibido: ");
-    Serial.println(incomingData);
-    if (strcmp(incomingData, "[START]") == 0) {
+    String command = message.data().substring(8);
+
+    if (command == "START") {
       Serial.println("Iniciando stream");
       mustSendImage = true;
-    } else if (strcmp(incomingData, "[PAUSE]") == 0) {
+    } else if (command == "PAUSE") {
       Serial.println("Stream pausado");
       mustSendImage = false;
     }
   } else if(message.data().startsWith("[COMMAND]")){
-    incomingData = (char*)message.data().c_str();
-    incomingData += 9;
-    Serial.print("Comando recibido: ");
-    Serial.println(incomingData);
-    // TODO: Implementar comandos, como cambiar la resolución de la cámara o encender el led
+    // Uno o más comandos separados por coma
+    String commands = message.data().substring(9);
+
+    int separatorIndex = -1;
+
+    do {
+      int nextSeparatorIndex = commands.indexOf(",", separatorIndex + 1);
+      int commandLength = nextSeparatorIndex == -1 ? commands.length() : nextSeparatorIndex;
+
+      String command = commands.substring(separatorIndex + 1, commandLength);
+
+      handleCommand(command);
+
+      separatorIndex = nextSeparatorIndex;
+    } while (separatorIndex != -1);
+
+    sendCurrentConfig();
   }
 }
 void onEventSocket(WebsocketsEvent event, String data) {
-  if (event == WebsocketsEvent::ConnectionClosed) {
+  /* if (event == WebsocketsEvent::ConnectionOpened) {
+    sendCurrentConfig();
+    connectionState = CONNECTED;
+  } else */ if (event == WebsocketsEvent::ConnectionClosed) {
     Serial.println("Desconectado del servidor");
     mustSendImage = false;
     connectionState = WAITING_FOR_SERVER;
@@ -105,7 +198,7 @@ esp_err_t initClient() {
   const char* socketHost = DEFAULT_SOCKET_HOST;
 #else
   // TODO: Se debe de recibir la ip del servidor por serial si no hay un host default
-  const char* socketHost = "0.0.0.0";
+  const char* socketHost = "";
 #endif
   Serial.print("Intentando conectar el cliente al servidor: ");
   Serial.print(socketHost);
@@ -126,6 +219,8 @@ esp_err_t initClient() {
   Serial.println("");
   Serial.println("WS OK");
   connectionState = CONNECTED;
+  
+  sendCurrentConfig();
   return ESP_OK;
 }
 
@@ -151,7 +246,7 @@ esp_err_t sendImage() {
     Serial.println("Error al enviar la imagen");
     return ESP_FAIL;
   }
-  Serial.println("Imagen enviada correctamente");
+  // Serial.println("Imagen enviada correctamente");
   return ESP_OK;
 }
 

@@ -4,156 +4,95 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ping</title>
-
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-      }
-
-      html {
-        font-family: sans-serif, Arial, Helvetica;
-        width: 100vw;
-        height: 100vh;
-      }
-
-      body {
-        display: flex;
-        height: 100%;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-      }
-
-      .actions {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 25px;
-      }
-
-      img {
-        height: 300px;
-        width: 500px;
-        border-radius: 15px;
-        object-fit: cover;
-      }
-
-      button {
-        padding: 10px;
-        background-color: transparent;
-        border: 1px solid black;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: all 0.2s ease-in-out;
-      }
-
-      button:hover {
-        color: white;
-        background-color: black;
-        transform: scale(1.1);
-      }
-
-      button:active {
-        color: white;
-        background-color: black;
-        transform: scale(0.9);
-      }
-    
-      .charging {
-        background-color: gray;
-        animation: charging 2s infinite;
-      }
-
-      @keyframes charging {
-        0% {
-          opacity: 0.2;
-        }
-        50% {
-          opacity: 0.8;
-        }
-        100% {
-          opacity: 0.2;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='cam.css') }}" />
   </head>
 
   <body>
     {% if isCallAvailable %}
-    <img id="image" class="charging" />
+    <figure class="stream">
+      <svg viewBox="0 0 24.00 24.00" fill="none" class="stream__btn-config" id="btn-open-modal"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20.1 9.2214C18.29 9.2214 17.55 7.9414 18.45 6.3714C18.97 5.4614 18.66 4.3014 17.75 3.7814L16.02 2.7914C15.23 2.3214 14.21 2.6014 13.74 3.3914L13.63 3.5814C12.73 5.1514 11.25 5.1514 10.34 3.5814L10.23 3.3914C9.78 2.6014 8.76 2.3214 7.97 2.7914L6.24 3.7814C5.33 4.3014 5.02 5.4714 5.54 6.3814C6.45 7.9414 5.71 9.2214 3.9 9.2214C2.86 9.2214 2 10.0714 2 11.1214V12.8814C2 13.9214 2.85 14.7814 3.9 14.7814C5.71 14.7814 6.45 16.0614 5.54 17.6314C5.02 18.5414 5.33 19.7014 6.24 20.2214L7.97 21.2114C8.76 21.6814 9.78 21.4014 10.25 20.6114L10.36 20.4214C11.26 18.8514 12.74 18.8514 13.65 20.4214L13.76 20.6114C14.23 21.4014 15.25 21.6814 16.04 21.2114L17.77 20.2214C18.68 19.7014 18.99 18.5314 18.47 17.6314C17.56 16.0614 18.3 14.7814 20.11 14.7814C21.15 14.7814 22.01 13.9314 22.01 12.8814V11.1214C22 10.0814 21.15 9.2214 20.1 9.2214ZM12 15.2514C10.21 15.2514 8.75 13.7914 8.75 12.0014C8.75 10.2114 10.21 8.7514 12 8.7514C13.79 8.7514 15.25 10.2114 15.25 12.0014C15.25 13.7914 13.79 15.2514 12 15.2514Z" fill="#292D32" class=""></path> </g></svg>
+      <img id="stream-image" class="stream__img charging" />
+    </figure>
     <div class="actions">
       <button id="btn-grant">Aceptar</button>
       <button id="btn-deny">Rechazar</button>
     </div>
+    <div class="modal-config hidden" id="modal-config">
+      <div class="modal-config__bg"></div>
+      <div class="modal-config__window">
+        <header class="modal-config__header">
+          <h2>Configuración</h2>
+          <button id="btn-close-modal">
+            ×
+          </button>
+        </header>
+        <form class="modal-config__form disabled" id="form-config">
+          <div>
+            <div>
+              <label for="framesize-select">Resolución</label>
+              <select name="framesize" id="framesize-select">
+                <option value="13">UXGA(1600x1200)</option>
+                <option value="12">SXGA(1280x1024)</option>
+                <option value="11">HD(1280x720)</option>
+                <option value="10">XGA(1024x768)</option>
+                <option value="9">SVGA(800x600)</option>
+                <option value="8" selected>VGA(640x480)</option>
+                <option value="7">HVGA(480x320)</option>
+                <option value="6">CIF(400x296)</option>
+                <option value="5">QVGA(320x240)</option>
+                <option value="4">240x240</option>
+                <option value="3">HQVGA(240x176)</option>
+                <option value="2">QCIF(176x144)</option>
+                <option value="1">QQVGA(160x120)</option>
+                <option value="0">96x96</option>
+              </select>
+            </div>
+            <div class="modal-config__switches">
+              <div>
+                <p class="label">
+                  Led
+                </p>
+                <label class="switch" for="led-checkbox">
+                  <input type="checkbox" name="led" id="led-checkbox" />
+                  <span></span>
+                </label>
+              </div>
+              <div>
+                <p class="label">
+                  Horizontal Flip
+                </p>
+                <label class="switch" for="hmirror-checkbox">
+                  <input type="checkbox" name="hmirror" id="hmirror-checkbox" checked />
+                  <span></span>
+                </label>
+              </div>
+              <div>
+                <p class="label">
+                  Vertical Flip
+                </p>
+                <label class="switch" for="vflip-checkbox">
+                  <input type="checkbox" name="vflip" id="vflip-checkbox" />
+                  <span></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <!-- A traves del websocket se envía la configuración, podemos cambiar la resolución (framesize), calidad -->
+          <button id="btn-save-config" type="submit">
+            Guardar
+          </button>
+        </form>
+      </div>
+    </div>
     {% else %}
-    <h2>No hay ninguna llamada disponible</h2>
+    <h2 class="no-call">No hay ninguna llamada disponible</h2>
     {% endif %}
   </body>
 
   {% if isCallAvailable %}
-  <script>
-    const wsURL = 'ws://' + '{{camHost}}' + ':' + '{{camPort}}' + '/';
-    const btnGrant = document.querySelector("#btn-grant");
-    const btnDeny = document.querySelector("#btn-deny");
-    const image = document.getElementById('image');
-
-    let isCharging = true;
-
-    btnGrant.addEventListener("click", async () => {
-      await fetch("{{grantUrl}}");
-      window.location.reload();
-    });
-
-    btnDeny.addEventListener("click", async () => {
-      await fetch("{{denyUrl}}");
-      window.location.reload();
-    });
-
-    const ws = new WebSocket(wsURL);
-
-    function setIsCharging(value) {
-      if (value) {
-        image.classList.add('charging');
-        isCharging = true;
-      } else {
-        image.classList.remove('charging');
-        isCharging = false;
-      }
-    }
-
-    ws.onmessage = (event) => {
-      if (typeof event.data === 'string') {
-        console.log(event)
-        if (event.data.substring(0, 9) === '[STREAM]') {
-          const incomingValue = event.data.substring(9);
-          if (incomingValue === '[PAUSE]') {
-            setIsCharging(true);
-          } else if (incomingValue === '[START]') {
-            setIsCharging(false);
-          }
-        } 
-      } else {
-        if (isCharging) {
-          image.classList.remove('charging');
-          isCharging = false;
-        }
-        const blob = new Blob([event.data], { type: 'image/jpeg' });
-        const url = URL.createObjectURL(blob);
-        image.src = url;
-      }
-    };
-
-    ws.onopen = () => {
-      console.log('Connected');
-    };
-    ws.onclose = () => {
-      console.log('Disconnected');
-    };
-    ws.onerror = (error) => {
-      console.error('Error: ' + error);
-    };
-  </script>
+    <script type="text/javascript">
+      const wsURL = 'ws://' + '{{camHost}}' + ':' + '{{camPort}}' + '/';
+    </script>
+    <script src="{{ url_for('static', filename='cam.js' ) }}"></script>
   {% endif %}
 </html>

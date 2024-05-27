@@ -1,17 +1,23 @@
+#include "sensor.h"
 #include "esp_camera.h"
 
 #define CAMERA_MODEL_AI_THINKER
 #include "camera_pins.h"
-#define PIN_LED 2
+#define PIN_LED 4
 
 // Uncomment and add values to set default WiFi values
-// #define DEFAULT_SSID ""
-// #define DEFAULT_PASSWORD ""
+#define DEFAULT_SSID ""
+#define DEFAULT_PASSWORD ""
 
 #define SOCKET_PORT 8000 // Port from the server
 
 // Uncomment and add value to set default host IP value
-// #define DEFAULT_SOCKET_HOST ""
+#define DEFAULT_SOCKET_HOST ""
+
+void initLedFlash() {
+  pinMode(PIN_LED, OUTPUT);
+  digitalWrite(PIN_LED, LOW);
+}
 
 esp_err_t initCamera() { 
   camera_config_t config;
@@ -51,7 +57,10 @@ esp_err_t initCamera() {
   }
 
   sensor_t * s = esp_camera_sensor_get();
-  int res = s->set_framesize(s, config.frame_size);
+  int res;
+  res = s->set_framesize(s, FRAMESIZE_VGA);
+
+  res = s->set_hmirror(s, 1);
 
   Serial.println("Inicio de Camara Correcto OK");
   return ESP_OK;
