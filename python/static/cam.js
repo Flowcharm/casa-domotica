@@ -138,14 +138,26 @@ function handleConfigMessage(message) {
     setIsWaitingConfig(false);
 }
 
-function handleStreamMessage(message) {
+async function handleStreamMessage(message) {
     if (isWaitingStream) {
         handleStreamStatus(socketMessageStream.START);
     }
 
     const blob = new Blob([message], { type: 'image/jpeg' });
-    const url = URL.createObjectURL(blob);
-    streamImage.src = url;
+
+    const bitmap = await createImageBitmap(blob);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const context = canvas.getContext('2d');
+    context.drawImage(bitmap, 0, 0);
+
+    streamImage.src = canvas.toDataURL();
+
+    if (streamImage.src) {
+        URL.revokeObjectURL(streamImage.src);
+    }
 }
 
 function handleStreamStatus(status) {
