@@ -21,9 +21,10 @@ const socketMessageStream = {
 const btnGrant = document.querySelector('#btn-grant');
 const btnDeny = document.querySelector('#btn-deny');
 
+const streamContainer = document.querySelector('#stream-container');
 const streamImage = document.querySelector('#stream-image');
 
-const btnOpenModal = document.querySelector('#btn-open-modal');
+const btnOpenConfig = document.querySelector('#btn-open-config');
 const btnCloseModal = document.querySelector('#btn-close-modal');
 const modalConfig = document.querySelector('#modal-config');
 
@@ -33,6 +34,7 @@ const ledCheckbox = document.querySelector('#led-checkbox');
 const hmirrorCheckbox = document.querySelector('#hmirror-checkbox');
 const vflipCheckbox = document.querySelector('#vflip-checkbox');
 const btnSaveConfig = document.querySelector('#btn-save-config');
+const bgModalConfig = document.querySelector('#bg-modal-config');
 
 let isWaitingStream = true;
 let isWaitingConfig = true;
@@ -56,8 +58,9 @@ btnGrant.addEventListener('click', handleGrant);
 btnDeny.addEventListener('click', handleDeny);
 
 btnSaveConfig.addEventListener('click', handleSaveConfig);
-btnOpenModal.addEventListener('click', toggleModalConfig);
+btnOpenConfig.addEventListener('click', toggleModalConfig);
 btnCloseModal.addEventListener('click', toggleModalConfig);
+bgModalConfig.addEventListener('click', toggleModalConfig);
 
 async function handleGrant() {
     await fetch('{{grantUrl}}');
@@ -88,6 +91,7 @@ function handleCameraSocketMessage(event) {
 }
 
 function closeCameraSocket() {
+    if (cameraSocket.readyState !== WebSocket.OPEN) return;
     sendMessage({ messageType: socketMessage.END_CONNECTION });
     cameraSocket.close();
 }
@@ -162,10 +166,12 @@ async function handleStreamMessage(message) {
 
 function handleStreamStatus(status) {
     if (status === socketMessageStream.PAUSE) {
-        streamImage.classList.add('charging');
+        if (!streamContainer.classList.contains('loading')) {
+            streamContainer.classList.add('loading');
+        }
         isWaitingStream = true;
     } else if (status === socketMessageStream.START) {
-        streamImage.classList.remove('charging');
+        streamContainer.classList.remove('loading');
         isWaitingStream = false;
     }
 }
@@ -202,13 +208,11 @@ function handleConfigSubmit() {
 
 function setIsWaitingConfig(value) {
     if (value) {
-        modalConfig.classList.add('charging');
-        formConfig.classList.add('disabled');
-        btnSaveConfig.textContent = 'Cerrar';
+        if (!modalConfig.classList.contains('loading')) {
+            modalConfig.classList.add('loading');
+        }
     } else {
-        modalConfig.classList.remove('charging');
-        formConfig.classList.remove('disabled');
-        btnSaveConfig.textContent = 'Guardar';
+        modalConfig.classList.remove('loading');
     }
     isWaitingConfig = value;
 }
