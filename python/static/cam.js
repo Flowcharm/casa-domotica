@@ -52,6 +52,11 @@ handleStreamStatus(socketMessageStream.PAUSE);
 
 cameraSocket.addEventListener("message", handleCameraSocketMessage);
 
+cameraSocket.addEventListener("close", () => {
+    closeCameraSocket();
+    setTimeout(() => window.location.reload(), 1000);
+});
+
 formConfig.addEventListener('submit', event => event.preventDefault());
 
 btnGrant.addEventListener('click', handleGrant);
