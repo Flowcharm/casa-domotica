@@ -112,9 +112,15 @@ function handleStringMessage(message) {
         handleStreamStatus(messageValue);
     } else if (messageType === socketMessage.CONFIG) {
         handleConfigMessage(messageValue);
+    } else if (messageType === socketMessage.COMMAND) {
+        handleCommandMessage(messageValue);
     } else {
         console.log('Unknown message:', { message, messageType, messageValue });
     }
+}
+
+function handleCommandMessage() {
+    setIsWaitingConfig(true);
 }
 
 function handleConfigMessage(message) {
@@ -215,6 +221,7 @@ function setIsWaitingConfig(value) {
         modalConfig.classList.remove('loading');
     }
     isWaitingConfig = value;
+    btnSaveConfig.disabled = isWaitingConfig;
 }
 
 function toggleModalConfig() {

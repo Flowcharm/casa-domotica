@@ -70,8 +70,10 @@ class StreamServer:
     async def on_client_message(self, message, websocket):
         if message == Messages.END_CONNECTION:
             await websocket.close()
-        elif message.startswith(Messages.COMMAND_PREFIX) and self.camera_websocket:
-            await self.camera_websocket.send(message)
+        elif message.startswith(Messages.COMMAND_PREFIX):
+            if self.camera_websocket:
+                await self.broadcast_command(message)
+                await self.camera_websocket.send(message)
 
     async def send_current_config(self, websocket):
         if self.current_config:
@@ -79,6 +81,9 @@ class StreamServer:
 
     async def broadcast_config(self):
         await asyncio.gather(*[client.send(self.current_config) for client in self.clients])
+
+    async def broadcast_command(self, command):
+        await asyncio.gather(*[client.send(command) for client in self.clients])
 
     async def broadcast_image(self, image_data):
         image_final = self.process_image(image_data)
